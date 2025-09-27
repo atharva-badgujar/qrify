@@ -1,14 +1,19 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { HeroButton } from "@/components/ui/hero-button"
-import { QrCode, Menu, X, User, LogIn } from "lucide-react"
+import { QrCode, Menu, X, User, LogIn, LayoutDashboard } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
 
-  const handleAuthClick = () => {
-    toast.info("Authentication feature coming soon!")
+  const handleSignOut = async () => {
+    await signOut()
+    toast.success("Signed out successfully")
   }
 
   return (
@@ -43,23 +48,46 @@ export const Header = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleAuthClick}
-              className="flex items-center gap-2"
-            >
-              <LogIn className="h-4 w-4" />
-              Sign In
-            </Button>
-            <HeroButton 
-              size="sm"
-              onClick={handleAuthClick}
-              className="flex items-center gap-2"
-            >
-              <User className="h-4 w-4" />
-              Sign Up Free
-            </HeroButton>
+            {user ? (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/dashboard")}
+                  className="flex items-center gap-2"
+                >
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/auth?mode=signin")}
+                  className="flex items-center gap-2"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+                <HeroButton 
+                  size="sm"
+                  onClick={() => navigate("/auth?mode=signup")}
+                  className="flex items-center gap-2"
+                >
+                  <User className="h-4 w-4" />
+                  Sign Up Free
+                </HeroButton>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -87,21 +115,43 @@ export const Header = () => {
                 About
               </a>
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border/50">
-                <Button 
-                  variant="ghost" 
-                  className="justify-start"
-                  onClick={handleAuthClick}
-                >
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Sign In
-                </Button>
-                <HeroButton 
-                  className="justify-start"
-                  onClick={handleAuthClick}
-                >
-                  <User className="h-4 w-4 mr-2" />
-                  Sign Up Free
-                </HeroButton>
+                {user ? (
+                  <>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="justify-start"
+                      onClick={handleSignOut}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="ghost" 
+                      className="justify-start"
+                      onClick={() => navigate("/auth?mode=signin")}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In
+                    </Button>
+                    <HeroButton 
+                      className="justify-start"
+                      onClick={() => navigate("/auth?mode=signup")}
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Sign Up Free
+                    </HeroButton>
+                  </>
+                )}
               </div>
             </nav>
           </div>
