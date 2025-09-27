@@ -44,9 +44,9 @@ export const Header = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate("/blog")}>
               Blog
             </Button>
-            <a href="#about" className="text-sm hover:text-primary transition-colors">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/about")}>
               About
-            </a>
+            </Button>
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -117,9 +117,9 @@ export const Header = () => {
               <Button variant="ghost" className="justify-start" onClick={() => navigate("/blog")}>
                 Blog
               </Button>
-              <a href="#about" className="text-sm hover:text-primary transition-colors py-2">
+              <Button variant="ghost" className="justify-start" onClick={() => navigate("/about")}>
                 About
-              </a>
+              </Button>
               <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border/50">
                 {user ? (
                   <>

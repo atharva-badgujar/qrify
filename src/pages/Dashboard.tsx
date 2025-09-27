@@ -3,10 +3,19 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { QrCode, Plus, BarChart3, Settings, Crown, Download, Eye, Trash2 } from "lucide-react"
+import { QrCode, Plus, BarChart3, Settings, Crown, Download, Eye, Trash2, X, LineChart } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
 import { supabase } from "@/integrations/supabase/client"
 import { toast } from "sonner"
+import QRCode from "qrcode"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface QRCodeData {
   id: string
@@ -29,6 +38,9 @@ const Dashboard = () => {
   const [qrCodes, setQrCodes] = useState<QRCodeData[]>([])
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loadingData, setLoadingData] = useState(true)
+  const [selectedQrCode, setSelectedQrCode] = useState<QRCodeData | null>(null)
+  const [qrCodeImageUrl, setQrCodeImageUrl] = useState("")
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -91,6 +103,40 @@ const Dashboard = () => {
       setQrCodes(prev => prev.filter(qr => qr.id !== id))
       toast.success("QR code deleted successfully")
     }
+  }
+
+  const generateQRCodeImage = async (content: string) => {
+    try {
+      const imageUrl = await QRCode.toDataURL(content, { width: 300, margin: 2 })
+      setQrCodeImageUrl(imageUrl)
+    } catch (error) {
+      toast.error("Failed to generate QR code image")
+      setQrCodeImageUrl("")
+    }
+  }
+
+  const handleViewQRCode = (qrCode: QRCodeData) => {
+    setSelectedQrCode(qrCode)
+    generateQRCodeImage(qrCode.content)
+  }
+
+  const handleDownloadQRCode = () => {
+    if (qrCodeImageUrl && selectedQrCode) {
+      const link = document.createElement("a")
+      link.href = qrCodeImageUrl
+      link.download = `${selectedQrCode.title}_qrcode.png`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      toast.success("QR code downloaded successfully!")
+    } else {
+      toast.error("No QR code to download.")
+    }
+  }
+
+  const handleViewAnalytics = (qrCode: QRCodeData) => {
+    setSelectedQrCode(qrCode)
+    setShowAnalyticsModal(true)
   }
 
   if (loading || loadingData) {
@@ -218,14 +264,44 @@ const Dashboard = () => {
               Create New QR
             </Button>
             
-            <Button
-              onClick={() => toast.info("Analytics feature coming soon!")}
-              className="h-20 flex-col gap-2"
-              variant="outline"
-            >
-              <BarChart3 className="h-6 w-6" />
-              View Analytics
-            </Button>
+            <Dialog open={showAnalyticsModal} onOpenChange={setShowAnalyticsModal}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => handleViewAnalytics(qrCodes[0])} // Assuming first QR for general analytics, will refine later
+                  className="h-20 flex-col gap-2"
+                  variant="outline"
+                >
+                  <BarChart3 className="h-6 w-6" />
+                  View Analytics
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>QR Code Analytics</DialogTitle>
+                  <DialogDescription>
+                    Insights for {selectedQrCode?.title || "your QR codes"}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Total Scans:</span>
+                    <span className="text-2xl font-bold">{selectedQrCode?.scan_count || totalScans}</span>
+                  </div>
+                  {/* More detailed analytics can be added here, e.g., using Recharts */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Scan History (Mock Data)</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-[200px] w-full flex items-center justify-center text-muted-foreground">
+                        <LineChart className="h-12 w-12" />
+                        <p>No detailed scan history available yet.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </DialogContent>
+            </Dialog>
             
             <Button
               onClick={() => navigate("/pricing")}
@@ -304,21 +380,77 @@ const Dashboard = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => toast.info("View analytics feature coming soon!")}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => toast.info("Download QR feature coming soon!")}
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleViewQRCode(qr)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>{selectedQrCode?.title}</DialogTitle>
+                              <DialogDescription>
+                                Scan this QR code with your device.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="flex justify-center p-4">
+                              {qrCodeImageUrl ? (
+                                <img src={qrCodeImageUrl} alt="QR Code" className="w-64 h-64" />
+                              ) : (
+                                <div className="w-64 h-64 flex items-center justify-center bg-gray-100 rounded-md">
+                                  <p className="text-muted-foreground">Loading QR...</p>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex justify-end gap-2">
+                              <Button variant="outline" onClick={handleDownloadQRCode}>
+                                <Download className="h-4 w-4 mr-2" />
+                                Download
+                              </Button>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        <Dialog open={showAnalyticsModal} onOpenChange={setShowAnalyticsModal}>
+                          <DialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleViewAnalytics(qr)}
+                            >
+                              <BarChart3 className="h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>QR Code Analytics</DialogTitle>
+                              <DialogDescription>
+                                Insights for {selectedQrCode?.title || "this QR code"}
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                <span className="text-muted-foreground">Total Scans:</span>
+                                <span className="text-2xl font-bold">{selectedQrCode?.scan_count || 0}</span>
+                              </div>
+                              <Card>
+                                <CardHeader>
+                                  <CardTitle>Scan History (Mock Data)</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="h-[200px] w-full flex items-center justify-center text-muted-foreground">
+                                    <LineChart className="h-12 w-12" />
+                                    <p>No detailed scan history available yet.</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
                         
                         <Button
                           size="sm"

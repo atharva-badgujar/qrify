@@ -41,7 +41,8 @@ const Index = () => {
             Professional QR code generation made simple and beautiful.
           </p>
           <p className="text-xs text-muted-foreground">
-            © 2024 QRify Pro. All rights reserved.
+            © 2025 QRify Pro. All rights reserved. Developed by Atharva Badgujar.
+            <a href="mailto:atharvabadgujar1924@gmail.com" className="text-primary hover:underline ml-1">atharvabadgujar1924@gmail.com</a>
           </p>
         </div>
       </footer>

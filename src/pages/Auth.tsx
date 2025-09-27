@@ -139,182 +139,170 @@ const Auth = () => {
         {/* Auth Form */}
         <Card className="shadow-elegant border-0 bg-background/80 backdrop-blur-xl">
           <CardHeader>
-            <Tabs defaultValue={mode} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="signin">
+            {mode === "signin" ? (
+              <>
                 <CardTitle>Welcome back</CardTitle>
                 <CardDescription>
                   Sign in to access your QR codes and analytics
                 </CardDescription>
-              </TabsContent>
-
-              <TabsContent value="signup">
+              </>
+            ) : (
+              <>
                 <CardTitle>Create your account</CardTitle>
                 <CardDescription>
                   Get started with your free QRify Pro account
                 </CardDescription>
-              </TabsContent>
-            </Tabs>
+              </>
+            )}
           </CardHeader>
 
           <CardContent>
-            <Tabs value={mode} onValueChange={(value) => {
-              // Update URL when tab changes
-              window.history.replaceState({}, '', `/auth?mode=${value}`)
-            }} className="w-full">
-              <TabsContent value="signin" className="space-y-4">
-                <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email Address</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signin-email"
-                        type="email"
-                        placeholder="Enter your email"
-                        className="pl-10"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        disabled={isLoading}
-                      />
-                    </div>
-                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+            {mode === "signin" ? (
+              <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email">Email Address</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signin-email"
+                      type="email"
+                      placeholder="Enter your email"
+                      className="pl-10"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      disabled={isLoading}
+                    />
                   </div>
+                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signin-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        className="pl-10 pr-10"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange("password", e.target.value)}
-                        disabled={isLoading}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                    {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-                  </div>
-
-                  <HeroButton
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Signing in..." : "Sign In to Account"}
-                  </HeroButton>
-                  
-                  <div className="text-center text-sm text-muted-foreground">
-                    Don't have an account?{" "}
-                    <Button 
-                      variant="link" 
-                      className="p-0 h-auto font-medium text-primary hover:underline"
-                      onClick={() => window.history.replaceState({}, '', '/auth?mode=signup')}
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signin-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="pl-10 pr-10"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      Sign up here
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
-                </form>
-              </TabsContent>
+                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
 
-              <TabsContent value="signup" className="space-y-4">
-                <form onSubmit={(e) => handleSubmit(e, true)} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-name"
-                        type="text"
-                        placeholder="Enter your full name"
-                        className="pl-10"
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange("fullName", e.target.value)}
-                        disabled={isLoading}
-                      />
-                    </div>
-                    {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email Address</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-email"
-                        type="email"
-                        placeholder="Enter your email address"
-                        className="pl-10"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        disabled={isLoading}
-                      />
-                    </div>
-                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Create Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="signup-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Create a strong password (6+ characters)"
-                        className="pl-10 pr-10"
-                        value={formData.password}
-                        onChange={(e) => handleInputChange("password", e.target.value)}
-                        disabled={isLoading}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                    {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
-                  </div>
-
-                  <HeroButton
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
+                <HeroButton
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Signing in..." : "Sign In to Account"}
+                </HeroButton>
+                
+                <div className="text-center text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-medium text-primary hover:underline"
+                    onClick={() => window.history.replaceState({}, '', '/auth?mode=signup')}
                   >
-                    {isLoading ? "Creating Account..." : "Create Free Account"}
-                  </HeroButton>
-                  
-                  <div className="text-center text-sm text-muted-foreground">
-                    Already have an account?{" "}
-                    <Button 
-                      variant="link" 
-                      className="p-0 h-auto font-medium text-primary hover:underline"
-                      onClick={() => window.history.replaceState({}, '', '/auth?mode=signin')}
+                    Sign up here
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={(e) => handleSubmit(e, true)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name">Full Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signup-name"
+                      type="text"
+                      placeholder="Enter your full name"
+                      className="pl-10"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange("fullName", e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email">Email Address</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="Enter your email address"
+                      className="pl-10"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
+                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Create Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="signup-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create a strong password (6+ characters)"
+                      className="pl-10 pr-10"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange("password", e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
                     >
-                      Sign in here
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
-                </form>
-              </TabsContent>
-            </Tabs>
+                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
+
+                <HeroButton
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating Account..." : "Create Free Account"}
+                </HeroButton>
+                
+                <div className="text-center text-sm text-muted-foreground">
+                  Already have an account?{" "}
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto font-medium text-primary hover:underline"
+                    onClick={() => window.history.replaceState({}, '', '/auth?mode=signin')}
+                  >
+                    Sign in here
+                  </Button>
+                </div>
+              </form>
+            )}
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
               <p>

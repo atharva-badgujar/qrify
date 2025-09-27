@@ -190,7 +190,7 @@ export const QRGenerator = () => {
         <CardContent className="space-y-6">
           {/* QR Type Tabs */}
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="grid w-full grid-cols-7 text-xs">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-7 text-xs">
               <TabsTrigger value="url" className="flex items-center gap-1">
                 <Link className="h-3 w-3" />
                 URL
