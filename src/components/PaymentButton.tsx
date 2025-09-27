@@ -42,6 +42,21 @@ export const PaymentButton = ({
 
     setLoading(true);
 
+    // Temporary payment simulation
+    toast({
+      title: "Payment System",
+      description: "Payment system is being set up. You'll be notified when it's ready!",
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Demo Mode",
+        description: `${planName} plan selected! Payment integration coming soon.`,
+      });
+      setLoading(false);
+    }, 2000);
+
+    /* Real payment code (commented for now):
     try {
       // Create Razorpay order
       const { data: orderData, error: orderError } = await supabase.functions.invoke(
@@ -76,7 +91,7 @@ export const PaymentButton = ({
         key: orderData.key_id,
         amount: orderData.amount,
         currency: orderData.currency,
-        name: 'QR Code Generator',
+        name: 'QRify Pro',
         description: `${planName} Plan Subscription`,
         order_id: orderData.order_id,
         handler: async function (response: any) {
@@ -135,6 +150,7 @@ export const PaymentButton = ({
     } finally {
       setLoading(false);
     }
+    */
   };
 
   return (

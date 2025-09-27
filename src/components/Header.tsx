@@ -38,9 +38,12 @@ export const Header = () => {
             <a href="#features" className="text-sm hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#pricing" className="text-sm hover:text-primary transition-colors">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/pricing")}>
               Pricing
-            </a>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate("/blog")}>
+              Blog
+            </Button>
             <a href="#about" className="text-sm hover:text-primary transition-colors">
               About
             </a>
@@ -108,9 +111,12 @@ export const Header = () => {
               <a href="#features" className="text-sm hover:text-primary transition-colors py-2">
                 Features
               </a>
-              <a href="#pricing" className="text-sm hover:text-primary transition-colors py-2">
+              <Button variant="ghost" className="justify-start" onClick={() => navigate("/pricing")}>
                 Pricing
-              </a>
+              </Button>
+              <Button variant="ghost" className="justify-start" onClick={() => navigate("/blog")}>
+                Blog
+              </Button>
               <a href="#about" className="text-sm hover:text-primary transition-colors py-2">
                 About
               </a>
