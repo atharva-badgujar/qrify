@@ -1,11 +1,11 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { HeroButton } from "@/components/ui/hero-button"
-import { Check, Star, Zap, Crown, ArrowLeft } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { HeroButton } from "@/components/ui/hero-button";
+import { Check, Star, Zap, Crown, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { PaymentButton } from "@/components/PaymentButton";
 
 const Pricing = () => {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
@@ -218,21 +218,30 @@ const Pricing = () => {
                 </CardContent>
 
                 <CardFooter>
-                  {plan.popular ? (
-                    <HeroButton
-                      className="w-full"
-                      onClick={() => handleSelectPlan(plan.name)}
-                    >
-                      {plan.buttonText}
-                    </HeroButton>
-                  ) : (
+                  {plan.name === "Free" ? (
                     <Button
-                      variant={plan.name === "Free" ? "outline" : "default"}
+                      variant="outline"
                       className="w-full"
                       onClick={() => handleSelectPlan(plan.name)}
                     >
                       {plan.buttonText}
                     </Button>
+                  ) : plan.popular ? (
+                    <PaymentButton
+                      planName="pro"
+                      amount={billingCycle === 'yearly' ? plan.price.yearly : plan.price.monthly}
+                      currency="INR"
+                      buttonText={plan.buttonText}
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                    />
+                  ) : (
+                    <PaymentButton
+                      planName="premium"
+                      amount={billingCycle === 'yearly' ? plan.price.yearly : plan.price.monthly}
+                      currency="INR"
+                      buttonText={plan.buttonText}
+                      className="w-full"
+                    />
                   )}
                 </CardFooter>
               </Card>
