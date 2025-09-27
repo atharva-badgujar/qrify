@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { HeroButton } from "@/components/ui/hero-button"
-import { Download, Palette, Link, Mail, Phone, MessageSquare, Share2 } from "lucide-react"
+import { Download, Palette, Link, Mail, Phone, MessageSquare, Share2, Save } from "lucide-react"
 import { toast } from "sonner"
+import { useAuth } from "@/hooks/useAuth"
+import { supabase } from "@/integrations/supabase/client"
 
 interface QRStyle {
   size: number
@@ -27,7 +29,9 @@ export const QRGenerator = () => {
     background: "#ffffff",
     margin: 4
   })
+  const [isSaving, setIsSaving] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { user } = useAuth()
 
   // Generate QR code
   const generateQR = async (text: string) => {
@@ -67,6 +71,44 @@ export const QRGenerator = () => {
     link.href = qrDataUrl
     link.click()
     toast.success("QR code downloaded!")
+  }
+
+  // Save QR code to account
+  const saveToAccount = async () => {
+    if (!user) {
+      toast.error("Please sign in to save QR codes")
+      return
+    }
+
+    if (!inputText.trim() || !qrDataUrl) {
+      toast.error("Please generate a QR code first")
+      return
+    }
+
+    setIsSaving(true)
+    
+    try {
+      const { error } = await supabase
+        .from('qr_codes')
+        .insert([{
+          user_id: user.id,
+          qr_type: activeTab,
+          content: inputText,  
+          title: `${activeTab.toUpperCase()} QR Code`,
+          style_config: style as any,
+          is_dynamic: false,
+          is_active: true
+        }])
+
+      if (error) throw error
+
+      toast.success("QR code saved to your account!")
+    } catch (error) {
+      console.error("Error saving QR code:", error)
+      toast.error("Failed to save QR code. Please try again.")
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // Handle tab content change
@@ -283,9 +325,11 @@ export const QRGenerator = () => {
               variant="outline"
               size="lg"
               className="w-full"
-              onClick={() => toast.info("Premium feature: Save to account - Sign up to unlock!")}
+              onClick={user ? saveToAccount : () => toast.info("Please sign in to save QR codes to your account")}
+              disabled={isSaving || !qrDataUrl}
             >
-              Save to Account
+              <Save className="h-4 w-4" />
+              {user ? (isSaving ? "Saving..." : "Save to Account") : "Sign In to Save"}
             </Button>
           </div>
 

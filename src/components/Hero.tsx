@@ -1,9 +1,12 @@
+import { Button } from "@/components/ui/button"
 import { HeroButton } from "@/components/ui/hero-button"
 import { Badge } from "@/components/ui/badge"
-import { QrCode, Zap, Palette, BarChart3, Star, ArrowRight } from "lucide-react"
+import { QrCode, Zap, Palette, BarChart3, Star, ArrowRight, Sparkles } from "lucide-react"
 import { toast } from "sonner"
+import { useAuth } from "@/hooks/useAuth"
 
 export const Hero = () => {
+  const { user } = useAuth()
   const handleGetStarted = () => {
     // Smooth scroll to QR generator section
     const qrSection = document.getElementById('qr-generator')
@@ -79,9 +82,19 @@ export const Hero = () => {
             <HeroButton 
               variant="hero-outline" 
               size="xl"
-              onClick={handleLearnMore}
+              className="group"
+              onClick={() => {
+                const featuresSection = document.getElementById('features')
+                if (featuresSection) {
+                  featuresSection.scrollIntoView({ behavior: 'smooth' })
+                } else {
+                  window.location.href = '/#features'
+                }
+              }}
             >
-              Learn More
+              <Sparkles className="h-4 w-4 mr-2 group-hover:text-primary" />
+              {user ? "Explore All Features" : "View Premium Features"}
+              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </HeroButton>
           </div>
 

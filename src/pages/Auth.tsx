@@ -162,17 +162,20 @@ const Auth = () => {
           </CardHeader>
 
           <CardContent>
-            <Tabs defaultValue={mode} className="w-full">
+            <Tabs value={mode} onValueChange={(value) => {
+              // Update URL when tab changes
+              window.history.replaceState({}, '', `/auth?mode=${value}`)
+            }} className="w-full">
               <TabsContent value="signin" className="space-y-4">
                 <form onSubmit={(e) => handleSubmit(e, false)} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+                    <Label htmlFor="signin-email">Email Address</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signin-email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder="Enter your email"
                         className="pl-10"
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
@@ -189,7 +192,7 @@ const Auth = () => {
                       <Input
                         id="signin-password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Your password"
+                        placeholder="Enter your password"
                         className="pl-10 pr-10"
                         value={formData.password}
                         onChange={(e) => handleInputChange("password", e.target.value)}
@@ -213,8 +216,19 @@ const Auth = () => {
                     className="w-full"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Signing in..." : "Sign In"}
+                    {isLoading ? "Signing in..." : "Sign In to Account"}
                   </HeroButton>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    Don't have an account?{" "}
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto font-medium text-primary hover:underline"
+                      onClick={() => window.history.replaceState({}, '', '/auth?mode=signup')}
+                    >
+                      Sign up here
+                    </Button>
+                  </div>
                 </form>
               </TabsContent>
 
@@ -227,7 +241,7 @@ const Auth = () => {
                       <Input
                         id="signup-name"
                         type="text"
-                        placeholder="Your full name"
+                        placeholder="Enter your full name"
                         className="pl-10"
                         value={formData.fullName}
                         onChange={(e) => handleInputChange("fullName", e.target.value)}
@@ -238,13 +252,13 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email">Email Address</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-email"
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder="Enter your email address"
                         className="pl-10"
                         value={formData.email}
                         onChange={(e) => handleInputChange("email", e.target.value)}
@@ -255,13 +269,13 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password">Create Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="Create a password (6+ characters)"
+                        placeholder="Create a strong password (6+ characters)"
                         className="pl-10 pr-10"
                         value={formData.password}
                         onChange={(e) => handleInputChange("password", e.target.value)}
@@ -285,8 +299,19 @@ const Auth = () => {
                     className="w-full"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Creating account..." : "Create Account"}
+                    {isLoading ? "Creating Account..." : "Create Free Account"}
                   </HeroButton>
+                  
+                  <div className="text-center text-sm text-muted-foreground">
+                    Already have an account?{" "}
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto font-medium text-primary hover:underline"
+                      onClick={() => window.history.replaceState({}, '', '/auth?mode=signin')}
+                    >
+                      Sign in here
+                    </Button>
+                  </div>
                 </form>
               </TabsContent>
             </Tabs>
