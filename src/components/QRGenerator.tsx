@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Slider } from "@/components/ui/slider"
 import { HeroButton } from "@/components/ui/hero-button"
-import { Download, Palette, Link, Mail, Phone, MessageSquare, Share2, Save } from "lucide-react"
+import { Download, Palette, Link, Mail, Phone, MessageSquare, Share2, Save, Crown } from "lucide-react"
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { supabase } from "@/integrations/supabase/client"
@@ -30,6 +30,15 @@ export const QRGenerator = () => {
     margin: 4
   })
   const [isSaving, setIsSaving] = useState(false)
+  const [emailData, setEmailData] = useState({
+    to: "",
+    subject: "",
+    body: ""
+  })
+  const [whatsappData, setWhatsappData] = useState({
+    number: "",
+    message: ""
+  })
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const { user } = useAuth()
 
@@ -111,8 +120,32 @@ export const QRGenerator = () => {
     }
   }
 
+  // Generate email mailto URL
+  const generateEmailURL = () => {
+    const params = new URLSearchParams()
+    if (emailData.subject) params.append('subject', emailData.subject)
+    if (emailData.body) params.append('body', emailData.body)
+    const paramString = params.toString()
+    return `mailto:${emailData.to}${paramString ? '?' + paramString : ''}`
+  }
+
+  // Generate WhatsApp URL
+  const generateWhatsAppURL = () => {
+    const cleanNumber = whatsappData.number.replace(/[^\d+]/g, '')
+    const params = new URLSearchParams()
+    if (whatsappData.message) params.append('text', whatsappData.message)
+    const paramString = params.toString()
+    return `https://wa.me/${cleanNumber}${paramString ? '?' + paramString : ''}`
+  }
+
   // Handle tab content change
   const handleTabChange = (value: string) => {
+    // Check if premium feature and user is not authenticated
+    if ((value === 'email-pro' || value === 'whatsapp') && !user) {
+      toast.error("Premium feature - Please sign in to access")
+      return
+    }
+
     setActiveTab(value)
     
     // Set example content based on tab
@@ -121,11 +154,28 @@ export const QRGenerator = () => {
       email: "mailto:hello@qrify-pro.com?subject=Hello&body=Hi there!",
       phone: "tel:+1234567890",
       sms: "sms:+1234567890?body=Hello from QR code!",
-      text: "Hello World! This is a custom text QR code."
+      text: "Hello World! This is a custom text QR code.",
+      "email-pro": "",
+      whatsapp: ""
     }
     
-    setInputText(examples[value as keyof typeof examples] || "")
+    if (value === "email-pro") {
+      setEmailData({ to: "hello@qrify-pro.com", subject: "Hello", body: "Hi there! I found your contact through a QR code." })
+    } else if (value === "whatsapp") {
+      setWhatsappData({ number: "+1234567890", message: "Hello! I found your contact through a QR code." })
+    } else {
+      setInputText(examples[value as keyof typeof examples] || "")
+    }
   }
+
+  // Update inputText when email or whatsapp data changes
+  useEffect(() => {
+    if (activeTab === 'email-pro') {
+      setInputText(generateEmailURL())
+    } else if (activeTab === 'whatsapp') {
+      setInputText(generateWhatsAppURL())
+    }
+  }, [emailData, whatsappData, activeTab])
 
   return (
     <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -140,7 +190,7 @@ export const QRGenerator = () => {
         <CardContent className="space-y-6">
           {/* QR Type Tabs */}
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-7 text-xs">
               <TabsTrigger value="url" className="flex items-center gap-1">
                 <Link className="h-3 w-3" />
                 URL
@@ -148,6 +198,16 @@ export const QRGenerator = () => {
               <TabsTrigger value="email" className="flex items-center gap-1">
                 <Mail className="h-3 w-3" />
                 Email
+              </TabsTrigger>
+              <TabsTrigger value="email-pro" className="flex items-center gap-1 relative">
+                <Mail className="h-3 w-3" />
+                Pro Email
+                <Crown className="h-2 w-2 text-primary" />
+              </TabsTrigger>
+              <TabsTrigger value="whatsapp" className="flex items-center gap-1 relative">
+                <MessageSquare className="h-3 w-3" />
+                WhatsApp
+                <Crown className="h-2 w-2 text-primary" />
               </TabsTrigger>
               <TabsTrigger value="phone" className="flex items-center gap-1">
                 <Phone className="h-3 w-3" />
@@ -184,6 +244,91 @@ export const QRGenerator = () => {
                   onChange={(e) => setInputText(e.target.value)}
                   className="mt-1"
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Basic email format. Try <strong>Pro Email</strong> for easier formatting!
+                </p>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="email-pro" className="space-y-4">
+              <div className="space-y-3 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="h-4 w-4 text-primary" />
+                  <Label className="text-sm font-semibold text-primary">Premium Email Builder</Label>
+                </div>
+                
+                <div>
+                  <Label htmlFor="email-to" className="text-xs">Recipient Email</Label>
+                  <Input
+                    id="email-to"
+                    type="email"
+                    placeholder="recipient@example.com"
+                    value={emailData.to}
+                    onChange={(e) => setEmailData(prev => ({ ...prev, to: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="email-subject" className="text-xs">Subject Line</Label>
+                  <Input
+                    id="email-subject"
+                    placeholder="Enter email subject"
+                    value={emailData.subject}
+                    onChange={(e) => setEmailData(prev => ({ ...prev, subject: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="email-body" className="text-xs">Message Body</Label>
+                  <textarea
+                    id="email-body"
+                    placeholder="Enter your email message here..."
+                    value={emailData.body}
+                    onChange={(e) => setEmailData(prev => ({ ...prev, body: e.target.value }))}
+                    className="mt-1 w-full p-2 border rounded-md resize-none h-20 text-sm"
+                  />
+                </div>
+                
+                <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                  <strong>Preview:</strong> {generateEmailURL()}
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="whatsapp" className="space-y-4">
+              <div className="space-y-3 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Crown className="h-4 w-4 text-primary" />
+                  <Label className="text-sm font-semibold text-primary">Premium WhatsApp Builder</Label>
+                </div>
+                
+                <div>
+                  <Label htmlFor="whatsapp-number" className="text-xs">Phone Number (with country code)</Label>
+                  <Input
+                    id="whatsapp-number"
+                    placeholder="+1234567890"
+                    value={whatsappData.number}
+                    onChange={(e) => setWhatsappData(prev => ({ ...prev, number: e.target.value }))}
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="whatsapp-message" className="text-xs">Pre-filled Message</Label>
+                  <textarea
+                    id="whatsapp-message"
+                    placeholder="Hello! I found your contact through a QR code."
+                    value={whatsappData.message}
+                    onChange={(e) => setWhatsappData(prev => ({ ...prev, message: e.target.value }))}
+                    className="mt-1 w-full p-2 border rounded-md resize-none h-20 text-sm"
+                  />
+                </div>
+                
+                <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+                  <strong>Preview:</strong> {generateWhatsAppURL()}
+                </div>
               </div>
             </TabsContent>
 

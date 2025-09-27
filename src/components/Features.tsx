@@ -10,7 +10,8 @@ import {
   Download, 
   Users,
   Crown,
-  Star
+  Star,
+  Mail
 } from "lucide-react"
 
 const features = [
@@ -25,6 +26,20 @@ const features = [
     title: "Custom Styling",
     description: "Personalize colors, add logos, change shapes, and apply gradients to match your brand.",
     badge: "Free"
+  },
+  {
+    icon: Mail,
+    title: "Professional Email QRs",
+    description: "Easy email builder with separate fields for subject, recipient, and message body formatting.",
+    badge: "Premium",
+    premium: true
+  },
+  {
+    icon: Users,
+    title: "WhatsApp Integration",
+    description: "Generate WhatsApp QR codes with pre-filled messages and contact numbers.",
+    badge: "Premium",
+    premium: true
   },
   {
     icon: BarChart3,
@@ -59,13 +74,6 @@ const features = [
     title: "Multiple Formats",
     description: "Download in PNG, SVG, PDF, and EPS formats for any use case.",
     badge: "Free"
-  },
-  {
-    icon: Users,
-    title: "Team Collaboration",
-    description: "Share QR codes with team members and manage projects collaboratively.",
-    badge: "Premium",
-    premium: true
   }
 ]
 
