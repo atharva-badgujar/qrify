@@ -1,56 +1,17 @@
-# Welcome to your Lovable project
+# QRify Pro - Professional QR Code Generator
 
-## Project info
+QRify Pro is a powerful and professional QR code generator that allows users to create custom QR codes with advanced styling, analytics tracking, and dynamic features. It's designed for businesses, events, and marketing campaigns that require high-quality, customizable QR solutions.
 
-**URL**: https://lovable.dev/projects/9a250ec7-039e-44db-abc0-f4a6f955cea0
+## Features
 
-## How can I edit this code?
+- **Custom QR Code Generation**: Create QR codes with various data types (URLs, text, Wi-Fi, etc.).
+- **Advanced Styling Options**: Customize colors, shapes, and add logos to your QR codes.
+- **Analytics Tracking**: Monitor scans and gather insights on your QR code performance.
+- **Dynamic QR Codes**: Update the content of your QR codes without reprinting.
+- **User Authentication**: Secure access to your QR code management dashboard.
+- **Payment Integration**: Seamless payment processing for premium features.
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/9a250ec7-039e-44db-abc0-f4a6f955cea0) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Technologies Used
 
 This project is built with:
 
@@ -59,15 +20,30 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (for backend services and authentication)
+- Razorpay (for payment processing)
 
-## How can I deploy this project?
+## Setup and Local Development
 
-Simply open [Lovable](https://lovable.dev/projects/9a250ec7-039e-44db-abc0-f4a6f955cea0) and click on Share -> Publish.
+To set up the project locally, follow these steps:
 
-## Can I connect a custom domain to my Lovable project?
+1.  **Clone the repository**:
+    ```sh
+    git clone <YOUR_GIT_URL>
+    cd <YOUR_PROJECT_NAME>
+    ```
+2.  **Install dependencies**:
+    ```sh
+    npm install
+    ```
+3.  **Environment Variables**: Create a `.env` file in the root directory and add your Supabase and Razorpay credentials. (Example: `VITE_SUPABASE_URL=...`, `VITE_SUPABASE_ANON_KEY=...`, `VITE_RAZORPAY_KEY_ID=...`)
+4.  **Start the development server**:
+    ```sh
+    npm run dev
+    ```
 
-Yes, you can!
+The application will be accessible at `http://localhost:8080` (or the port configured in `vite.config.ts`).
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Deployment
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This project can be deployed using any static site hosting service (e.g., Vercel, Netlify, GitHub Pages). Ensure your environment variables are correctly configured for production.
